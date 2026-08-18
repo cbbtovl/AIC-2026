@@ -1,0 +1,35 @@
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Environment & Sensitive Keys
+.env
+.env.local
+
+# SQLite Database & Backups
+*.db
+*.db-shm
+*.db-wal
+*_backup*.db
+
+# FAISS Cache & Large Datasets
+*.index
+*.pkl
+dataset_manifest.json
+
+# Uploads & Keyframe Extractions
+uploads/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
