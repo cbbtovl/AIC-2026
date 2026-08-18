@@ -69,7 +69,10 @@ def _load_multilingual_text_model():
 
         model_name = "sentence-transformers/clip-ViT-B-32-multilingual-v1"
         print(f"[Embedding] Đang tải mô hình Văn bản Tiếng Việt Đa ngôn ngữ: {model_name}...")
-        _multilingual_text_model = SentenceTransformer(model_name).to(DEVICE)
+        try:
+            _multilingual_text_model = SentenceTransformer(model_name, local_files_only=True).to(DEVICE)
+        except Exception:
+            _multilingual_text_model = SentenceTransformer(model_name).to(DEVICE)
         print("✅ [Embedding] Mô hình Văn bản Đa ngôn ngữ (512D) đã sẵn sàng.")
     
     return _multilingual_text_model

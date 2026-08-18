@@ -15,6 +15,11 @@ DB_PATH = BASE_DIR / "database.db"  # Dùng chung tên database.db với toàn h
 def get_db_connection():
     conn = sqlite3.connect(str(DB_PATH))
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA synchronous=NORMAL")
+    conn.execute("PRAGMA mmap_size=3000000000")  # 3GB Memory Mapping
+    conn.execute("PRAGMA cache_size=-64000")      # 64MB Cache
+    conn.execute("PRAGMA temp_store=MEMORY")
     return conn
 
 # Tạo alias dự phòng để file nào gọi get_connection() cũng không bị lỗi
@@ -108,7 +113,10 @@ class FAISSStore:
             cache_mtime = min(cache_index_path.stat().st_mtime_ns, cache_metadata_path.stat().st_mtime_ns)
             if cache_mtime >= database_mtime:
                 try:
-                    self.index = faiss.read_index(str(cache_index_path))
+                    try:
+                        self.index = faiss.read_index(str(cache_index_path), faiss.IO_FLAG_MMAP)
+                    except Exception:
+                        self.index = faiss.read_index(str(cache_index_path))
                     with cache_metadata_path.open("rb") as cache_file:
                         cached = pickle.load(cache_file)
                     self.dim = cached["dim"]

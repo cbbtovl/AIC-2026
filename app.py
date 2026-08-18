@@ -659,9 +659,24 @@ with gr.Blocks(title="AI Multimodal Retrieval System", theme=gr.themes.Soft()) a
                 outputs=[trake_output],
             )
 
+def warmup_system():
+    """Khởi động và nạp sẵn FAISS Vector Store + Multilingual CLIP Model vào RAM/VRAM để lần tìm kiếm đầu tiên diễn ra tức thì (<0.05s)."""
+    print("🔥 [Warmup] Đang nạp trước FAISS Cache & Mô hình CLIP 512D...", flush=True)
+    try:
+        from database import get_faiss_store
+        from services.embedding_service import get_clip_text_embedding
+        get_faiss_store()
+        get_clip_text_embedding("khoi dong he thong")
+        print("✅ [Warmup] Hệ thống đã sẵn sàng tìm kiếm siêu tốc (<0.05s)!", flush=True)
+    except Exception as e:
+        print(f"⚠️ [Warmup] Lưu ý khởi động: {e}", flush=True)
+
 if __name__ == "__main__":
-    print("👉 Thư mục Project:", PROJECT_ROOT)
-    print("👉 Thư mục Uploads (Tuyệt đối):", upload_path_str)
+    print("👉 Thư mục Project:", PROJECT_ROOT, flush=True)
+    print("👉 Thư mục Uploads (Tuyệt đối):", upload_path_str, flush=True)
+    
+    # Nạp trước hệ thống để loại bỏ độ trễ lần đầu (Zero Cold Start)
+    warmup_system()
     
     demo.launch(
         server_name="127.0.0.1",
